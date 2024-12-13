@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import * as WebBrowser from 'expo-web-browser';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from "react-native";
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Link } from "expo-router";
 import axios from 'axios';
+
+WebBrowser.maybeCompleteAuthSession();
 
 // Endpoint
 const discovery = {
@@ -13,20 +16,17 @@ const discovery = {
 const PORT = 8081; // Corrected: PORT should not be part of the config object
 const CLIENT_ID = '4b86d9bdd9504812bb81fda5bf228f0a';
 const CLIENT_SECRET = '9dc22177fd8749b3abb930e4d5b96ba4';
-const REDIRECT_URI = `http://localhost:${PORT}/callback`; // your redirect URI
+const REDIRECT_URI = 'http://10.0.0.159:8081/search'
 
 
 const Search: React.FC = () => {
 
   const [search, setSearch] = useState("");
-
-
-
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID,
       clientSecret: CLIENT_SECRET,
-      //scopes: ['user-read-email', 'playlist-modify-public'],
+      scopes: ['user-read-email', 'playlist-modify-public'],
       usePKCE: false,
       redirectUri: REDIRECT_URI
     },
@@ -44,7 +44,7 @@ const Search: React.FC = () => {
         'https://accounts.spotify.com/api/token',
         new URLSearchParams({
           'grant_type': 'authorization_code',
-          'redirect_uri': REDIRECT_URI,
+          'redirect_uri': 'exp://10.0.0.159:8081/search',
           'code': code
         }).toString(),
         {
@@ -60,13 +60,16 @@ const Search: React.FC = () => {
         .then((response) => {
           setAccessToken(response.data.access_token);
           setRefreshToken(response.data.refresh_token);
-          console.log(accessToken);
         })
         .catch((error) => {
           console.error('Error exchanging code for token:', error);
         });
     }
   }, [response]);
+
+  const searchGo = () => {
+    promptAsync();
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -81,8 +84,9 @@ const Search: React.FC = () => {
         value={search}
         onChangeText={setSearch}
       />
+      <Text>{REDIRECT_URI}</Text>
       <Text>{accessToken}</Text>
-      <TouchableOpacity style={styles.navButton} onPress={()=>{promptAsync();}}>
+      <TouchableOpacity style={styles.navButton} onPress={() => {promptAsync();}}>
         <Text style={styles.buttonText}>Go!</Text>
       </TouchableOpacity>
 
