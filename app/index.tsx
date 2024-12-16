@@ -1,23 +1,21 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "../types/navigation"; // Import types
+import { RootStackParamList } from "../types/navigation"; 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-// This gives you better type safety for navigation
+// Type for navigation
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'login'>;
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   
-  const navigation = useNavigation<LoginScreenNavigationProp>(); // Use typed navigation
+  const navigation = useNavigation<LoginScreenNavigationProp>(); 
 
   const handleLogin = () => {
-    // Simple login validation (replace with real logic later)
     if (username === "user" && password === "password") {
       Alert.alert("Login Successful", "You have successfully logged in!");
-      // Navigate to Home after successful login
       navigation.navigate("home");
     } else {
       Alert.alert("Login Failed", "Please check your credentials.");
@@ -26,6 +24,10 @@ const Login: React.FC = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require("../assets/images/TuneTide.png")}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Welcome to TuneTide</Text>
       <TextInput
         style={styles.input}
@@ -54,18 +56,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#519DD5", // Main color
+    backgroundColor: "#519DD5", 
     padding: 20,
+  },
+  logo: {
+    width: 100, 
+    height: 100, 
+    marginBottom: 20,
   },
   title: {
     fontSize: 32,
-    color: "#C3EAF2", // Icon color for the title
+    color: "#C3EAF2", 
     marginBottom: 40,
   },
   input: {
     width: "100%",
     height: 50,
-    backgroundColor: "#006EB5", // Secondary color
+    backgroundColor: "#006EB5", 
     marginBottom: 20,
     paddingLeft: 15,
     borderRadius: 5,
@@ -73,13 +80,13 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     width: "100%",
-    backgroundColor: "#006EB5", // Secondary color
+    backgroundColor: "#006EB5", 
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
   },
   buttonText: {
-    color: "#C3EAF2", // Icon color for the text
+    color: "#C3EAF2", 
     fontSize: 18,
   },
 });
