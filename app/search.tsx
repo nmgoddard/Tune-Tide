@@ -5,6 +5,7 @@ import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Link } from "expo-router";
 import axios from 'axios';
 import NowPlaying from "./playing";
+import SpotifyWebApi from "spotify-web-api-node";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -24,6 +25,9 @@ const Search: React.FC = () => {
 
   const [search, setSearch] = useState("");
   const [song, setSong] = useState(null);
+  const spotifyApi = new SpotifyWebApi();
+  let any : any[] = [];
+  const [results, setResults] = useState(any)
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID,
@@ -69,8 +73,17 @@ const Search: React.FC = () => {
     }
   }, [response]);
 
-  const searchGo = () => {
-    promptAsync();
+  const searchGo = () =>{
+    spotifyApi.setAccessToken(accessToken);
+    spotifyApi.searchTracks(search)
+  .then(function(data) {
+    let searchResults = data.body.tracks
+    let searchItems = searchResults?.items
+    setResults(searchItems!)
+    console.log(results)
+  }, function(err) {
+    console.error(err);
+  });
   }
 
   return (
@@ -86,9 +99,7 @@ const Search: React.FC = () => {
         value={search}
         onChangeText={setSearch}
       />
-      <Text>{REDIRECT_URI}</Text>
-      <Text>{accessToken}</Text>
-      <TouchableOpacity style={styles.navButton} onPress={() => {promptAsync();}}>
+      <TouchableOpacity style={styles.navButton} onPressIn={() => {promptAsync();}} onPress={searchGo}>
         <Text style={styles.buttonText}>Go!</Text>
       </TouchableOpacity>
       <NowPlaying/>
