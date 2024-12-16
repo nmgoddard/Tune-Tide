@@ -4,6 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput } from 
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Link } from "expo-router";
 import axios from 'axios';
+import NowPlaying from "./playing";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -16,12 +17,13 @@ const discovery = {
 const PORT = 8081; // Corrected: PORT should not be part of the config object
 const CLIENT_ID = '4b86d9bdd9504812bb81fda5bf228f0a';
 const CLIENT_SECRET = '9dc22177fd8749b3abb930e4d5b96ba4';
-const REDIRECT_URI = 'http://10.0.0.159:8081/search'
+const REDIRECT_URI = makeRedirectUri({scheme: "your-app-scheme", path: "/search" });
 
 
 const Search: React.FC = () => {
 
   const [search, setSearch] = useState("");
+  const [song, setSong] = useState(null);
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: CLIENT_ID,
@@ -44,7 +46,7 @@ const Search: React.FC = () => {
         'https://accounts.spotify.com/api/token',
         new URLSearchParams({
           'grant_type': 'authorization_code',
-          'redirect_uri': 'exp://10.0.0.159:8081/search',
+          'redirect_uri': REDIRECT_URI,
           'code': code
         }).toString(),
         {
@@ -89,6 +91,7 @@ const Search: React.FC = () => {
       <TouchableOpacity style={styles.navButton} onPress={() => {promptAsync();}}>
         <Text style={styles.buttonText}>Go!</Text>
       </TouchableOpacity>
+      <NowPlaying/>
 
         {/* Fixed navigation buttons at the bottom */}
         <View style={styles.fixedButtons}>

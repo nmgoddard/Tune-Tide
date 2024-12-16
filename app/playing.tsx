@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "black",
+    maxHeight:200
   },
   text: {
     color: "white",
