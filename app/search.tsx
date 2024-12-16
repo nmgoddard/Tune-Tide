@@ -4,7 +4,6 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, TextInput, FlatLi
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Link } from "expo-router";
 import axios from 'axios';
-import NowPlaying from "./playing";
 import SpotifyWebApi from "spotify-web-api-node";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -176,7 +175,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   header: {
-
+    fontSize: 30,
+    color: "#C3EAF2", // Icon color for the title
+    marginBottom: 30,
   },
   input: {
     width: "75%",

@@ -1,51 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Button } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Audio } from "expo-av";
 
 const Playing: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false); // Track play/pause state
-  const [songTitle, setSongTitle] = useState<string>("");
-  const [artistName, setArtistName] = useState<string>("");
-  const [songDuration, setSongDuration] = useState<number>(0);
-  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false); 
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const { song } = useLocalSearchParams();
   const parsedSong = song ? JSON.parse(Array.isArray(song) ? song[0] : song) : null;
 
   useEffect(() => {
-    if (song){
-      const parsedSong = JSON.parse(decodeURIComponent(song as string));
-      setSongTitle(parsedSong.name);
-      setArtistName(parsedSong.artists[0].name);
-      setSongDuration(parsedSong.duration_ms / 1000);
-      loadAudio(parsedSong.preview_url);
-    }
+    const loadSound = async () => {
+      if (parsedSong && parsedSong.preview_url) {
+        try {
+          const { sound } = await Audio.Sound.createAsync(
+            { uri: parsedSong.preview_url },
+            { shouldPlay: true }
+          );
+          setSound(sound);
+          setIsPlaying(true);
+        } catch (error) {
+          console.error('Error loading sound:', error);
+        }
+      }
+    };
+
+    loadSound();
 
     return () => {
-      if (sound){
-        sound.unloadAsync();
+      if (sound) {
+        sound.unloadAsync(); // Cleanup when the component is unmounted
       }
     };
   }, [song]);
 
-  const loadAudio = async (url: string) => {
-    const { sound } = await Audio.Sound.createAsync(
-      {uri: url},
-      { shouldPlay: isPlaying },
-      onPlaybackStatusUpdate
-    );
-    setSound(sound);
-  };
-
-  const onPlaybackStatusUpdate = (status: any) => {
-    if (status.isLoaded) {
-      setCurrentTime(status.positionMillis / 1000); // Update the current playback time in seconds
-    }
-  };
-
   // Toggle play/pause
-  const handlePlayPause = async() => {
+  const togglePlayPause = async() => {
     if (isPlaying) {
       await sound?.pauseAsync(); // Pause the music
     } else {
@@ -54,23 +44,13 @@ const Playing: React.FC = () => {
     setIsPlaying((prevState) => !prevState);
   };
 
-  const formatTime = (time: number) => {
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
+  if (!song){
+    return(
+      <View style={styles.container}>
+        <Text style={styles.title}>No song data available</Text>
+      </View>
+    )
   }
-
-  // Skip to next song (you would have to connect this to your song source)
-  const handleSkip = () => {
-    console.log("Skipping to the next song...");
-    // Logic to play the next song can go here.
-  };
-
-  // Rewind to previous song (similar to skip, connect this to your song source)
-  const handleRewind = () => {
-    console.log("Rewinding to the previous song...");
-    // Logic to rewind to the previous song can go here.
-  };
 
   return (
     <View style={styles.container}>
@@ -78,10 +58,7 @@ const Playing: React.FC = () => {
       <Text style={styles.song}>
         {parsedSong?.name || "Unknown Song"} - {parsedSong?.artists?.[0]?.name || "Unknown Artist"}
       </Text>
-
-      <TouchableOpacity onPress={handlePlayPause} style={styles.playPauseButton}>
-        <Text style={styles.buttonText}>{isPlaying ? "Pause" : "Play"}</Text>
-      </TouchableOpacity>
+      <Button title={isPlaying ? 'Pause' : 'Play'} onPress={togglePlayPause}/>
     </View>
   );
 };
@@ -99,6 +76,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     maxHeight: 200,
+  },
+  title: {
+    color: "white",
+    fontSize: 24,
+    marginBottom: 20,
   },
   text: {
     color: "#C3EAF2",

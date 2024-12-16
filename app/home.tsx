@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
-import { Link, useNavigation } from "expo-router";
+import React, { useEffect, useState} from "react";
+import { View, Text, StyleSheet, ScrollView, FlatList, Image, TouchableOpacity } from "react-native";
+import { Link } from "expo-router";
 
 const Home: React.FC = () => {
 
@@ -37,23 +37,23 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#519DD5", // Main color
+    backgroundColor: "#519DD5",
     paddingTop: 50,
-    paddingBottom: 120, // To avoid the buttons overlapping
+    paddingBottom: 120,
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: "space-between",
-    paddingBottom: 120, // Ensures the buttons stay at the bottom
+    paddingBottom: 120,
   },
   title: {
     fontSize: 30,
-    color: "#C3EAF2", // Icon color for the title
+    color: "#C3EAF2",
     marginBottom: 30,
   },
   description: {
     fontSize: 18,
-    color: "#C3EAF2", // Icon color for text
+    color: "#C3EAF2",
     textAlign: "center",
     marginBottom: 50,
   },
@@ -62,19 +62,19 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#519DD5", // Main color for the footer
+    backgroundColor: "#519DD5",
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10,
   },
   navButton: {
-    backgroundColor: "#006EB5", // Secondary color for nav buttons
+    backgroundColor: "#006EB5",
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 5,
   },
   buttonText: {
-    color: "#C3EAF2", // Icon color for text
+    color: "#C3EAF2",
     fontSize: 18,
   },
 });
